@@ -1,11 +1,9 @@
 package cch.com.example.demo.mapper;
 
 import org.apache.ibatis.annotations.DeleteProvider;
-import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectProvider;
-import org.apache.ibatis.annotations.UpdateProvider;
 
 import cch.com.example.demo.provider.UserProvider;
 import cch.com.example.demo.request.VO.UserRequestVO;
