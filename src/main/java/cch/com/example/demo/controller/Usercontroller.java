@@ -23,7 +23,7 @@ public class Usercontroller {
     UserService userService;
 
     @PostMapping("/add")
-    public ResponseEntity<UserResponseVO> addUser(@Valid @RequestBody UserRequestVO user) {
+    public ResponseEntity<UserResponseVO> addUser(@Valid @RequestBody UserRequestVO user) throws Exception {
         return ResponseEntity.ok().body(userService.add(user));
     }
     
@@ -32,7 +32,7 @@ public class Usercontroller {
         return ResponseEntity.ok().body(userService.delete(id));
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{id}")
     public ResponseEntity<UserResponseVO> updateUser(@Valid @RequestBody UserRequestVO user) {
         return ResponseEntity.ok().body(userService.update(user));
     }

@@ -7,7 +7,7 @@ import cch.com.example.demo.response.VO.UserResponseVO;
 
 @Service
 public interface UserService {
-    public UserResponseVO add(UserRequestVO user);
+    public UserResponseVO add(UserRequestVO user) throws Exception;
 
     public UserResponseVO update(UserRequestVO user);
     

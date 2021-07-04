@@ -13,8 +13,11 @@ public class UserServiceImpl implements UserService {
     UserMapper userMapper;
 
     @Override
-    public UserResponseVO add(UserRequestVO user) {
+    public UserResponseVO add(UserRequestVO user) throws Exception {
         // TODO Auto-generated method stub
+        if (userMapper.isExistUser(user.getName())) {
+            throw new Exception("Name is exist");
+        }
         return userMapper.add(user);
     }
 

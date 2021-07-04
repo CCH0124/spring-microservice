@@ -27,12 +27,12 @@ public class UserProvider {
         return sql.toString();
     }
 
-    public final String isExistUser(@Param("id") String id) {
+    public final String isExistUser(@Param("name") String name) {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT ")
         .append("EXISTS ( SELECT 1 FROM ")
         .append(TABLE)
-        .append(" WHERE id = #{id}");
+        .append(" WHERE name = #{name} )");
 
         return sql.toString();
     }

@@ -25,6 +25,6 @@ public interface UserMapper {
     public UserResponseVO getById(@Param("id") String id);
 
     @SelectProvider(type = UserProvider.class, method = "isExistUser")
-    public Boolean isExistUser(@Param("id") String id);
+    public Boolean isExistUser(@Param("name") String name);
 
 }
