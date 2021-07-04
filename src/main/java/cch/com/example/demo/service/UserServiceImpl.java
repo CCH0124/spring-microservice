@@ -1,11 +1,16 @@
 package cch.com.example.demo.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cch.com.example.demo.definition.ResponseCode;
 import cch.com.example.demo.mapper.UserMapper;
 import cch.com.example.demo.request.VO.UserRequestVO;
-import cch.com.example.demo.response.VO.UserResponseVO;
+import cch.com.example.demo.response.VO.ResponseResult;
+import cch.com.example.demo.exception.BaseException;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -13,33 +18,36 @@ public class UserServiceImpl implements UserService {
     UserMapper userMapper;
 
     @Override
-    public UserResponseVO add(UserRequestVO user) throws Exception {
+    public ResponseResult add(UserRequestVO user) throws Exception {
         // TODO Auto-generated method stub
         if (userMapper.isExistUser(user.getName())) {
-            throw new Exception("Name is exist");
+            throw new BaseException(ResponseCode.NAME_IS_EXIST);
         }
-        return userMapper.add(user);
+        return new ResponseResult().success(userMapper.add(user));
     }
 
     @Override
-    public UserResponseVO update(UserRequestVO user) {
+    public ResponseResult update(UserRequestVO user) {
         // TODO Auto-generated method stub
-        return userMapper.update(user);
+        return new ResponseResult().success(userMapper.update(user));
     }
 
     @Override
-    public UserResponseVO getUser(String id) {
+    public ResponseResult getUser(String id) {
         // TODO Auto-generated method stub
-        return userMapper.getById(id);
+        return new ResponseResult().success(userMapper.getById(id));
     }
 
     @Override
-    public Boolean delete(String id) {
+    public ResponseResult delete(String id) {
         // TODO Auto-generated method stub
+        Map<String, Boolean> map = new HashMap<>();
         if (userMapper.delete(id) != 0) {
-            return true;
+            map.put("status", true);
+            return new ResponseResult().success(map);
         }
-        return false;
+        map.put("status", false);
+        return new ResponseResult().success(map);
     }
     
 }

@@ -3,7 +3,6 @@ package cch.com.example.demo.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import cch.com.example.demo.request.VO.UserRequestVO;
-import cch.com.example.demo.response.VO.UserResponseVO;
+import cch.com.example.demo.response.VO.ResponseResult;
 import cch.com.example.demo.service.UserService;
 
 @RestController
@@ -23,23 +22,23 @@ public class Usercontroller {
     UserService userService;
 
     @PostMapping("/add")
-    public ResponseEntity<UserResponseVO> addUser(@Valid @RequestBody UserRequestVO user) throws Exception {
-        return ResponseEntity.ok().body(userService.add(user));
+    public ResponseResult addUser(@Valid @RequestBody UserRequestVO user) throws Exception {
+        return userService.add(user);
     }
     
     @DeleteMapping("{id}")
-    public ResponseEntity<Boolean> deleteUser(@PathVariable(value = "id") String id) {
-        return ResponseEntity.ok().body(userService.delete(id));
+    public ResponseResult deleteUser(@PathVariable(value = "id") String id) {
+        return userService.delete(id);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<UserResponseVO> updateUser(@Valid @RequestBody UserRequestVO user) {
-        return ResponseEntity.ok().body(userService.update(user));
+    public ResponseResult updateUser(@Valid @RequestBody UserRequestVO user) {
+        return userService.update(user);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<UserResponseVO> updateUser(@PathVariable(value = "id") String id) {
-        return ResponseEntity.ok().body(userService.getUser(id));
+    public ResponseResult updateUser(@PathVariable(value = "id") String id) {
+        return userService.getUser(id);
     }
     
 }
