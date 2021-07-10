@@ -8,12 +8,12 @@ import cch.com.example.demo.response.VO.UserResponseVO;
 
 @Service
 public interface UserService {
-    public ResponseResult add(UserRequestVO user) throws Exception;
+    public ResponseResult<UserResponseVO> add(UserRequestVO user) throws Exception;
 
-    public ResponseResult update(UserRequestVO user);
+    public ResponseResult<UserResponseVO> update(UserRequestVO user);
     
-    public ResponseResult getUser(String id);
+    public ResponseResult<UserResponseVO> getUser(String id);
     
-    public ResponseResult delete(String id);
+    public ResponseResult<Object> delete(String id);
 
 }
