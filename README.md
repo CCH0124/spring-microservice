@@ -41,3 +41,109 @@ employee-# \dt
 
 ```
 
+## Postman Test
+
+### Add User
+```
+post http://localhost:8080/add
+```
+
+Request
+```json
+{
+    "name": "itahi",
+    "age": 26,
+    "email": "123@gmail.com",
+    "tel": "0900000000"
+}
+```
+
+Response
+
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": {
+        "id": "1",
+        "name": "itahi",
+        "age": 26,
+        "email": "123@gmail.com",
+        "tel": "0900000000"
+    }
+}
+```
+
+### Get user
+
+```
+GET http://localhost:8080/1
+<!-- 1 是 id -->
+```
+
+Response
+
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": {
+        "id": "1",
+        "name": "itahi",
+        "age": 26,
+        "email": "123@gmail.com",
+        "tel": "0900000000"
+    }
+}
+```
+
+### Update User
+
+```
+PUT http://localhost:8080/update
+```
+
+Request
+
+```json
+{
+    "id": 1,
+    "name": "itahi",
+    "age": 28,
+    "email": "1234@gmail.com",
+    "tel": "0900000000"
+}
+```
+
+Response
+
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": {
+        "id": "1",
+        "name": "itahi",
+        "age": 28,
+        "email": "1234@gmail.com",
+        "tel": "0900000000"
+    }
+}
+```
+
+### Delete User
+
+```
+DELETE http://localhost:8080/1
+```
+
+Response
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": {
+        "status": true
+    }
+}
+```

@@ -32,7 +32,7 @@ public class Usercontroller {
         return new ResponseEntity<>(userService.delete(id), HttpStatus.OK);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update")
     public ResponseEntity<?> updateUser(@Valid @RequestBody UserRequestVO user) {
         return new ResponseEntity<>(userService.update(user), HttpStatus.OK);
     }
