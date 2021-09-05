@@ -17,7 +17,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import java.util.Properties;
 
-@Configuration
+@Configuration(proxyBeanMethods=false)
 @MapperScan(basePackages = { DataBaseConfig.PACKAGE }, sqlSessionFactoryRef = "sqlSessionFactory")
 public class DataBaseConfig {
 
@@ -38,7 +38,7 @@ public class DataBaseConfig {
     @Value("${db_maximum_pool_size}")
     private String maximumPoolSize;
 
-    @Bean(name = "dataSource")
+    @Bean(name="dataSource")
     @Primary
     public DataSource dataSource() {
         Properties props = new Properties();
@@ -55,15 +55,15 @@ public class DataBaseConfig {
         return new HikariDataSource(hikariConfig);
     }
 
-    @Bean(name = "transactionManager")
+    @Bean(name="transactionManager")
     @Primary
-    public DataSourceTransactionManager masterTransactionManager() {
-        return new DataSourceTransactionManager((dataSource()));
+    public DataSourceTransactionManager masterTransactionManager(@Qualifier("dataSource") DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
     }
 
-    @Bean(name = "sqlSessionFactory")
+    @Bean(name="sqlSessionFactory")
     @Primary
-    public SqlSessionFactory sqlSessionFactory(@Qualifier("dataSource") DataSource dataSource) throws Exception {
+    public SqlSessionFactory sqlSessionFactory(@Qualifier("dataSource") DataSource dataSource) throws Exception { // (@Qualifier("dataSource")
         final SqlSessionFactoryBean sessionFactoryBean = new SqlSessionFactoryBean();
         sessionFactoryBean.setDataSource(dataSource);
         sessionFactoryBean.getObject().getConfiguration().setMapUnderscoreToCamelCase(true);

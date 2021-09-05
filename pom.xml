@@ -100,9 +100,18 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<image>
-						<buildpacks>
-							<buildpack>gcr.io/paketo-buildpacks/java-native-image:5.3.0</buildpack>
-						</buildpacks>
+						<name>cch/${project.artifactId}:latest</name>
+						<builder>paketobuildpacks/builder:tiny</builder>
+        				        <env>
+							<BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
+							<BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+								-Dspring.graal.skip-logback=true
+								--initialize-at-run-time=org.apache.ibatis.logging.slf4j.Slf4jLocationAwareLoggerImpl
+								--initialize-at-run-time=org.apache.ibatis.logging.LogFactory
+								--no-fallback
+								--allow-incomplete-classpath
+							</BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                    				</env>
 					</image>
 				</configuration>
 			</plugin>
