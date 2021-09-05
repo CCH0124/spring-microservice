@@ -201,21 +201,19 @@ Maven 尚新增 spring native 依賴
 接著使用  `buildpacks` 建構 native-image。使用擁有 native-image 的 `Paketo Java buildpacks` 配置 `spring-boot-maven-plugin`，此方式是強制 GraalVM 版本
 
 ```xml
-    <build>
-        <plugins>
-            <plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<image>
-						<buildpacks>
-							<buildpack>gcr.io/paketo-buildpacks/java-native-image:5.3.0</buildpack>
-						</buildpacks>
-					</image>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+                        <plugin>
+                                <groupId>org.springframework.boot</groupId>
+                                <artifactId>spring-boot-maven-plugin</artifactId>
+                                <configuration>
+                                        <image>
+                                                <name>cch/${project.artifactId}:latest</name>
+                                                <builder>paketobuildpacks/builder:tiny</builder>
+                                                <env>
+                                                        <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
+                                                </env>
+                                        </image>
+                                </configuration>
+                        </plugin>
 ```
 
 正規啟用 native image
@@ -261,7 +259,7 @@ Maven 尚新增 spring native 依賴
 ```
 
 
-build 和 run 映像檔
+build 和 run 映像檔，需安裝 [graalvm](https://www.graalvm.org/downloads/) 至環境中。
 
 ```bash
 mvn spring-boot:build-image
@@ -271,7 +269,51 @@ Error，在 github 上的[討論](https://github.com/spring-projects-experimenta
 ```
 org.springframework.experimental:spring-aot-maven-plugin:0.10.2:test-generate (test-generate) on project demo: Build failed during Spring AOT test code generation: ERROR: in 'cch.com.example.demo.config.DataBaseConfig' these methods are directly invoking methods marked @Bean: [masterTransactionManager] - due to the enforced proxyBeanMethods=false for components in a native-image, please consider refactoring to use instance injection. If you are confident this is not going to affect your application, you may turn this check off using -Dspring.native.verify=false. -> [Help 1]
 ```
-待解決...
 
+可參考此[鏈結](https://spring.training/understanding-inter-bean-method-reference-in-spring-configuration/)解決或者此[鏈結](https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#_use_code_proxybeanmethods_false_code_or_method_parameter_injection_in_code_configuration_code_classes)。
 
 >spring-boot-devtools AOT 目前不知援因此須將它移除
+
+建立過程中也發現說它需要 Memoey 8GB 和 CPU 2 core 的需求。最後產生出一個 Image
+
+```bash
+...
+paketobuildpacks/builder                        tiny       22c7fe1896cb   41 years ago    471MB
+paketobuildpacks/builder                        <none>     ed40d8a4a352   41 years ago    443MB
+cch/demo                                        latest     a6f6ed2a8d08   41 years ago    146MB # this
+paketobuildpacks/builder                        <none>     e42a0c22a44b   41 years ago    690MB
+paketobuildpacks/builder                        base       813f636c6c2b   41 years ago    690MB
+```
+
+使用 `docker run --rm -p 8080:8080 cch/demo` 出現以下錯誤
+
+```bash
+java.lang.ExceptionInInitializerError: null
+        at com.oracle.svm.core.classinitialization.ClassInitializationInfo.initialize(ClassInitializationInfo.java:315) ~[na:na]
+        at org.mybatis.spring.mapper.MapperScannerConfigurer.postProcessBeanDefinitionRegistry(MapperScannerConfigurer.java:357) ~[cch.com.example.demo.DemoApplication:2.0.6]
+        at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:311) ~[na:na]
+        at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:142) ~[na:na]
+        at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:746) ~[na:na]
+        at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:564) ~[na:na]
+        at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:145) ~[na:na]
+        at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754) ~[cch.com.example.demo.DemoApplication:2.5.3]
+        at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:434) ~[cch.com.example.demo.DemoApplication:2.5.3]
+        at org.springframework.boot.SpringApplication.run(SpringApplication.java:338) ~[cch.com.example.demo.DemoApplication:2.5.3]
+        at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343) ~[cch.com.example.demo.DemoApplication:2.5.3]
+        at org.springframework.boot.SpringApplication.run(SpringApplication.java:1332) ~[cch.com.example.demo.DemoApplication:2.5.3]
+        at cch.com.example.demo.DemoApplication.main(DemoApplication.java:10) ~[cch.com.example.demo.DemoApplication:na]
+Caused by: org.apache.ibatis.logging.LogException: Error creating logger for logger org.mybatis.spring.mapper.ClassPathMapperScanner.  Cause: java.lang.NullPointerException
+        at org.apache.ibatis.logging.LogFactory.getLog(LogFactory.java:54) ~[na:na]
+        at org.apache.ibatis.logging.LogFactory.getLog(LogFactory.java:47) ~[na:na]
+        at org.mybatis.logging.LoggerFactory.getLogger(LoggerFactory.java:32) ~[na:na]
+        at org.mybatis.spring.mapper.ClassPathMapperScanner.<clinit>(ClassPathMapperScanner.java:58) ~[na:na]
+        at com.oracle.svm.core.classinitialization.ClassInitializationInfo.invokeClassInitializer(ClassInitializationInfo.java:375) ~[na:na]
+        at com.oracle.svm.core.classinitialization.ClassInitializationInfo.initialize(ClassInitializationInfo.java:295) ~[na:na]
+        ... 12 common frames omitted
+Caused by: java.lang.NullPointerException: null
+        at org.apache.ibatis.logging.LogFactory.getLog(LogFactory.java:52) ~[na:na]
+        ... 17 common frames omitted
+```
+
+## GraalVM Native Build Tools
+可以使用 `mvn -Pnative -DskipTests package` 方式進行建構，前提是要安裝 `native-image`
